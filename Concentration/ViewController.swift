@@ -33,8 +33,8 @@ class ViewController: UIViewController {
         pickedEmojiTheme = emojiThemePicker()
     }
     @IBAction func touchCard(_ sender: UIButton) {
-        game.addToFlipCounter()
-        if let cardNumber = cardButtons.firstIndex(of: sender) {
+        if let cardNumber = cardButtons.firstIndex(of: sender), !game.cards[cardNumber].isMatched {
+            game.addToFlipCounter()
             game.chooseCard(at: cardNumber)
             updateViewFromModel()
         }
