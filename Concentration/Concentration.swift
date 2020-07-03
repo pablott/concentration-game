@@ -9,17 +9,40 @@
 import Foundation
 
 class Concentration {
-    var cards = [Card]()
+    private(set) var cards = [Card]()
     var flipCount = 0
     var score = 0
     var numberOfPairsOfCards: Int?
-    var indexOfOneAndOnlyFaceUpCard: Int?
+    private var indexOfOneAndOnlyFaceUpCard: Int? {
+        get {
+            var foundIndex: Int?
+            for index in cards.indices {
+                if cards[index].isFaceUp {
+                    if foundIndex == nil {
+                        foundIndex = index
+                    } else {
+                        // Two cards up at this point, so nilify indexOfOneAndOnlyFaceUpCard
+                        return nil
+                    }
+                }
+            }
+            return foundIndex
+        }
+        set {
+            // Either no cards, two cards are face up
+            // Flip cards down
+            for index in cards.indices {
+                cards[index].isFaceUp = (index == newValue)
+            }
+        }
+    }
     
     func chooseCard(at index: Int) {
+        assert(cards.indices.contains(index), "Concentration.chooseCard(at: \(index)): chosen index not in the cards")
         if let matchIndex = indexOfOneAndOnlyFaceUpCard, matchIndex != index {
             // One card face up, and touched on a different card
             // Check if cards match and marked pair as matched
-            if cards[matchIndex].identifier == cards[index].identifier {
+            if cards[matchIndex] == cards[index] {
                 cards[matchIndex].isMatched = true
                 cards[index].isMatched = true
                 score += 2
@@ -35,16 +58,8 @@ class Concentration {
                 cards[matchIndex].hasBeenMismatched = true
                 cards[index].hasBeenMismatched = true
             }
-            // Two cards up at this point, so nilify indexOfOneAndOnlyFaceUpCard
             cards[index].isFaceUp = true
-            indexOfOneAndOnlyFaceUpCard = nil
         } else {
-            // Either no cards, two cards are face up, or touched same card
-            // Flip cards down
-            for flipDownIndex in cards.indices {
-                cards[flipDownIndex].isFaceUp = false
-            }
-            cards[index].isFaceUp = true
             indexOfOneAndOnlyFaceUpCard = index
         }
     }
@@ -56,7 +71,7 @@ class Concentration {
     func startGame() {
         flipCount = 0
         score = 0
-        indexOfOneAndOnlyFaceUpCard = nil
+//        indexOfOneAndOnlyFaceUpCard = nil
         // Reset deck and pairs
         for flipDownIndex in cards.indices {
             cards[flipDownIndex].isFaceUp = false
@@ -65,7 +80,7 @@ class Concentration {
         addCards(pairs: numberOfPairsOfCards)
     }
     
-    func addCards(pairs: Int?) {
+    private func addCards(pairs: Int?) {
         cards = []
         // Add pairs
         if let pairs = pairs {
@@ -76,10 +91,11 @@ class Concentration {
         }
         
         // Shuffle
-        cards.shuffle()
+//        cards.shuffle()
     }
     
     init(numberOfPairsOfCards: Int) {
+        assert(numberOfPairsOfCards > 0, "Concentration.init(\(numberOfPairsOfCards)): you must have at least one paircards ")
         self.numberOfPairsOfCards = numberOfPairsOfCards
         addCards(pairs: numberOfPairsOfCards)
     }
