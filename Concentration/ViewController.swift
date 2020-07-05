@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     }
     
     private let emojiThemes = [
-         "🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮",
+        "🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮",
         "🍏🍎🍐🍊🍋🍌🍉🍇🍓🍈🍒🍑",
         "😀😃😄😁😆😅😂🤣☺️😊😇🙂",
         // Add new themes below:
@@ -27,7 +27,11 @@ class ViewController: UIViewController {
     private var emoji = [Card:String]()
 
     @IBOutlet private weak var scoreLabel: UILabel!
-    @IBOutlet private weak var flipCountLabel: UILabel!
+    @IBOutlet private weak var flipCountLabel: UILabel! {
+        didSet {
+            updateFlipCountLabel()
+        }
+    }
     @IBOutlet private var cardButtons: [UIButton]!
         
     @IBAction private func touchStartButton(_ sender: UIButton) {
@@ -44,10 +48,19 @@ class ViewController: UIViewController {
         }
     }
     
+    private func updateFlipCountLabel() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .strokeWidth : 5.0,
+            .strokeColor : UIColor(named: "orange")!
+        ]
+        let attributedString = NSAttributedString(string: "Flips: \(game.flipCount)", attributes: attributes)
+        flipCountLabel.attributedText = attributedString
+    }
+    
     private func updateViewFromModel() {
         // Update counter/score
         scoreLabel.text = "Score: \(game.score)"
-        flipCountLabel.text = "Flips: \(game.flipCount)"
+        updateFlipCountLabel()
         
         // Update cards
         for index in cardButtons.indices {

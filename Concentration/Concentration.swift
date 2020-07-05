@@ -10,23 +10,12 @@ import Foundation
 
 class Concentration {
     private(set) var cards = [Card]()
-    var flipCount = 0
+    private(set) var flipCount = 0
     var score = 0
     var numberOfPairsOfCards: Int?
     private var indexOfOneAndOnlyFaceUpCard: Int? {
         get {
-            var foundIndex: Int?
-            for index in cards.indices {
-                if cards[index].isFaceUp {
-                    if foundIndex == nil {
-                        foundIndex = index
-                    } else {
-                        // Two cards up at this point, so nilify indexOfOneAndOnlyFaceUpCard
-                        return nil
-                    }
-                }
-            }
-            return foundIndex
+            return cards.indices.filter { cards[$0].isFaceUp }.oneAndOnly
         }
         set {
             // Either no cards, two cards are face up
@@ -91,12 +80,18 @@ class Concentration {
         }
         
         // Shuffle
-//        cards.shuffle()
+        cards.shuffle()
     }
     
     init(numberOfPairsOfCards: Int) {
         assert(numberOfPairsOfCards > 0, "Concentration.init(\(numberOfPairsOfCards)): you must have at least one paircards ")
         self.numberOfPairsOfCards = numberOfPairsOfCards
         addCards(pairs: numberOfPairsOfCards)
+    }
+}
+
+extension Collection {
+    var oneAndOnly: Element? {
+        return count == 1 ? first : nil
     }
 }
