@@ -60,7 +60,6 @@ class Concentration {
     func startGame() {
         flipCount = 0
         score = 0
-//        indexOfOneAndOnlyFaceUpCard = nil
         // Reset deck and pairs
         for flipDownIndex in cards.indices {
             cards[flipDownIndex].isFaceUp = false
